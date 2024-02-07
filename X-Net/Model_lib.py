@@ -147,11 +147,11 @@ class pix2pix_generator(object):
 
         if batch_size is None:
             batch_size = con.FLAGS.batch_size
-        with tf.variable_scope("discriminator") as scope:
+        with tf.compat.v1.variable_scope("discriminator") as scope:
             if reuse:
-                tf.get_variable_scope().reuse_variables()
+                tf.compat.v1.get_variable_scope().reuse_variables()
             else:
-                assert tf.get_variable_scope().reuse == False
+                assert tf.compat.v1.get_variable_scope().reuse == False
 
             h0 = tools.lrelu(tools.conv2d(input_data, self.base_dim, k_h=3, k_w=3, d_h=2, d_w=2, name='dis_h0_conv'),leak=0)
             # h0 is (128 x 128 x self.df_dim)
@@ -180,11 +180,11 @@ class pix2pix_generator(object):
             w = con.FLAGS.input_image_width
         if batch_size is None:
             batch_size = con.FLAGS.batch_size
-        with tf.variable_scope('generator'):
+        with tf.compat.v1.variable_scope('generator'):
             if reuse:
-                tf.get_variable_scope().reuse_variables()
+                tf.compat.v1.get_variable_scope().reuse_variables()
             # else:
-                # assert tf.get_variable_scope().reuse == False
+                # assert tf.compat.v1.get_variable_scope().reuse == False
             # image is (h x w x input_c_dim)
             # img_input = tf.split(input_data, 2, 3)
 

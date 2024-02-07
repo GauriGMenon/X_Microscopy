@@ -5,7 +5,7 @@ import scipy.misc
 from glob import glob
 
 if __name__ == '__main__':
-    sample_files = sorted(glob('/media/ksc/code/tubulin-model-data/multicolor-data/EB1/*'))
+    sample_files = sorted(glob('../tubulin-model-data/multicolor-data/EB1/*'))
     for num in sample_files:
         print(num)
         eb1_name = str(num)+'/model3-400-ak3-g-g-tubulin.tif'

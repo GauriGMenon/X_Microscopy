@@ -52,7 +52,7 @@ class pix2pix(object):
         self.key_90 = 1
         self.key_91 = 1
     def build_model(self):
-        self.real_data = tf.placeholder(tf.float32,
+        self.real_data = tf.compat.v1.placeholder(tf.float32,
                                         [self.batch_size, self.h,self.w,
                                          self.input_c_dim*2 + self.output_c_dim],
                                         name='real_A_and_B_images')
@@ -144,14 +144,14 @@ class pix2pix(object):
         self.disb_loss = 1.*(self.disb_loss_real + self.disb_loss_fake)
 
 
-        t_vars = tf.trainable_variables()
+        t_vars = tf.compat.v1.trainable_variables()
 
         total_parameters = 0
         for vari in  t_vars:
             shape = vari.get_shape()
             vari_para = 1
             for vari_dim in shape:
-                vari_para *= vari_dim.value
+                vari_para *= vari_dim
             total_parameters += vari_para
         print('total trainable parameters:{}'.format(total_parameters))
 
@@ -183,8 +183,8 @@ class pix2pix(object):
         self.disa_loss_sum = tf.summary.scalar("disa_loss", self.disa_loss)
         self.disb_loss_sum = tf.summary.scalar("disb_loss", self.disb_loss)
 
-        self.saver = tf.train.Saver(tf.global_variables())
-        self.saver_1 = tf.train.Saver(tf.global_variables())
+        self.saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables())
+        self.saver_1 = tf.compat.v1.train.Saver(tf.compat.v1.global_variables())
 
     def train(self, args):
         # for i in range(4):
@@ -471,7 +471,7 @@ class pix2pix(object):
                     fusion_image_placeholder,fusion_image_placeholder_1, batch_size=1,
                     h=sample_images.shape[0], w=sample_images.shape[1], reuse=False)
                 # ssim_a = tf.image.ssim_multiscale(target_image_placeholder, super_a, max_val=1.0)[0]
-            saver = tf.train.Saver(tf.global_variables())
+            saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables())
             with tf.Session(graph=graph, config=tf.ConfigProto(
                     allow_soft_placement=True,
                     log_device_placement=False,
@@ -586,7 +586,7 @@ class pix2pix(object):
                                     fusion_image_placeholder,fusion_image_placeholder_1, batch_size=1,
                                     h=image2.shape[0], w=image2.shape[1], reuse=False)
 
-                            saver = tf.train.Saver(tf.global_variables())
+                            saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables())
                             with tf.Session(graph=graph, config=tf.ConfigProto(
                                 allow_soft_placement=True,
                                 log_device_placement=False,

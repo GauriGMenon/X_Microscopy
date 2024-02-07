@@ -4,7 +4,7 @@ from glob import glob
 from skimage import measure as m
 import os
 
-sample_files = sorted(glob('X-Microscopy\tubulin-models\tubulin-models\tubulin-models\example-data-tubulin-model-WF+MU-SRM-to-SRM\training-example-data'))
+sample_files = sorted(glob('../tubulin-models/tubulin-models/tubulin-models/example-data-tubulin-model-WF+MU-SRM-to-SRM/training-example-data'))
 #Changed Here: "/media/ksc/code/example-data-2022.12.12/tubulin-models/example-data-tubulin-model-WF+MU-SRM-to-SRM/test-example-data/*"
 # for sample_file in sample_files:
 #     dir = sample_file + '/'

@@ -56,14 +56,14 @@ def main(_):
     logger_test = setup_logger("tests_val", args.log_dir, filename='{}_train.txt'.format(
         'test_0107'))
     os.environ['CUDA_VISIBLE_DEVICES']='0'
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
     if args.same_input_size:
         base_count = 0
-        tf.reset_default_graph()
+        tf.compat.v1.reset_default_graph()
         graph = tf.Graph()
         with graph.as_default():
-            with tf.Session(graph=graph,config=config) as sess:
+            with tf.compat.v1.Session(graph=graph,config=config) as sess:
                 pix_model = pix2pix_generator()
                 fusion_model = pix2pix(sess,pix_model,h = args.fine_size, w = args.fine_size,
                         batch_size = batch_size, L1_lambda=args.L1_lambda, dataset_name=args.dataset_name,
@@ -193,4 +193,5 @@ def main(_):
             sess.close()
 
 if __name__ == '__main__':
-    tf.app.run()
+    #tf.app.run()
+    tf.compat.v1.app.run()

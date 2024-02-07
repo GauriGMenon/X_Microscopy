@@ -11,14 +11,15 @@ from tensorflow.python.framework import ops
 class batch_norm(object):
     # h1 = lrelu(tf.contrib.layers.batch_norm(conv2d(h0, self.df_dim*2, name='d_h1_conv'),decay=0.9,updates_collections=None,epsilon=0.00001,scale=True,scope="d_h1_conv"))
     def __init__(self, epsilon=1e-5, momentum=0.9, name="batch_norm"):
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
             self.epsilon = epsilon
             self.momentum = momentum
             self.name = name
 
     def __call__(self, x, train=True):
-        return tf.contrib.layers.batch_norm(x, decay=self.momentum, updates_collections=None, epsilon=self.epsilon,
-                                            scale=True, scope=self.name)
+        batch_norm_layer=tf.keras.layers.BatchNormalization(momentum=self.momentum, epsilon=self.epsilon,scale=True,name=self.name)
+        x_normalized = batch_norm_layer(x)
+        return x_normalized
 
 def binary_cross_entropy(preds, targets, name=None):
     """Computes binary cross entropy given `preds`.
@@ -45,7 +46,7 @@ def spp_layer(input_, levels=4, name='SPP_layer', pool_type='max_pool'):
 
     shape = input_.get_shape().as_list()
 
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
 
         for l in range(levels):
 
@@ -81,12 +82,12 @@ def conv_cond_concat(x, y):
 def conv2d(input_, output_dim,
            k_h=5, k_w=5, d_h=2, d_w=2, stddev=0.02,
            name="conv2d"):
-    with tf.variable_scope(name):
-        w = tf.get_variable('w', [k_h, k_w, input_.get_shape()[-1], output_dim],
-                            initializer=tf.truncated_normal_initializer(stddev=stddev))
+    with tf.compat.v1.variable_scope(name):
+        w = tf.compat.v1.get_variable('w', [k_h, k_w, input_.get_shape()[-1], output_dim],
+                            initializer=tf.compat.v1.truncated_normal_initializer(stddev=stddev))
         conv = tf.nn.conv2d(input_, w, strides=[1, d_h, d_w, 1], padding='SAME')    #[样本步长，卷积核高，卷积核宽，通道步长]
 
-        biases = tf.get_variable('biases', [output_dim], initializer=tf.constant_initializer(0.0))
+        biases = tf.compat.v1.get_variable('biases', [output_dim], initializer=tf.constant_initializer(0.0))
         conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
         return conv
 
@@ -94,9 +95,9 @@ def conv2d(input_, output_dim,
 def deconv2d(input_, output_shape,
              k_h=5, k_w=5, d_h=2, d_w=2, stddev=0.02,
              name="deconv2d", with_w=False):
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
         # filter : [height, width, output_channels, in_channels]
-        w = tf.get_variable('w', [k_h, k_w, output_shape[-1], input_.get_shape()[-1]],
+        w = tf.compat.v1.get_variable('w', [k_h, k_w, output_shape[-1], input_.get_shape()[-1]],
                             initializer=tf.random_normal_initializer(stddev=stddev))
 
         try:
@@ -108,7 +109,7 @@ def deconv2d(input_, output_shape,
             deconv = tf.nn.deconv2d(input_, w, output_shape=output_shape,
                                     strides=[1, d_h, d_w, 1],padding='SAME')
 
-        biases = tf.get_variable('biases', [output_shape[-1]], initializer=tf.constant_initializer(0.0))
+        biases = tf.compat.v1.get_variable('biases', [output_shape[-1]], initializer=tf.constant_initializer(0.0))
         deconv = tf.reshape(tf.nn.bias_add(deconv, biases), deconv.get_shape())
 
         if with_w:
@@ -124,10 +125,10 @@ def lrelu(x, leak=0.2, name="lrelu"):
 def linear(input_, output_size, scope=None, stddev=0.02, bias_start=0.0, with_w=False):
     shape = input_.get_shape().as_list()
 
-    with tf.variable_scope(scope or "Linear"):
-        matrix = tf.get_variable("Matrix", [shape[1], output_size], tf.float32,
+    with tf.compat.v1.variable_scope(scope or "Linear"):
+        matrix = tf.compat.v1.get_variable("Matrix", [shape[1], output_size], tf.float32,
                                  tf.random_normal_initializer(stddev=stddev))
-        bias = tf.get_variable("bias", [output_size],
+        bias = tf.compat.v1.get_variable("bias", [output_size],
                                initializer=tf.constant_initializer(bias_start))
         if with_w:
             return tf.matmul(input_, matrix) + bias, matrix, bias
@@ -164,7 +165,7 @@ def _variable_on_cpu(name, shape, initializer):
     """
     # with tf.device('/cpu:0'):
     dtype =  tf.float32
-    var = tf.get_variable(name, shape, initializer=initializer, dtype=dtype)
+    var = tf.compat.v1.get_variable(name, shape, initializer=initializer, dtype=dtype)
     return var
 
 
@@ -196,7 +197,7 @@ def _variable_with_weight_decay(name, shape, stddev, wd):
     return var
 
 def conv(layer_name, x, in_channels, out_channels, kernel_size=[3, 3], stride=[1, 1, 1, 1]):
-    with tf.variable_scope(layer_name, reuse=tf.AUTO_REUSE):
+    with tf.compat.v1.variable_scope(layer_name, reuse=tf.AUTO_REUSE):
         w = _variable_with_weight_decay(name='weights',
                                              shape=[kernel_size[0], kernel_size[1], in_channels, out_channels],
                                              stddev=5e-2, wd=0.0)
@@ -211,11 +212,11 @@ def conv_nonacti(layer_name, x, in_channels, out_channels, kernel_size=[3, 3], s
     '''
     Layer only do the job of convolution and bias adding
     '''
-    with tf.variable_scope(layer_name, reuse=tf.AUTO_REUSE):
-        w = tf.get_variable(name='weights_nonacti',
+    with tf.compat.v1.variable_scope(layer_name, reuse=tf.AUTO_REUSE):
+        w = tf.compat.v1.get_variable(name='weights_nonacti',
                             shape=[kernel_size[0], kernel_size[1], in_channels, out_channels],
                             initializer=tf.contrib.layers.xavier_initializer())
-        b = tf.get_variable(name='biases_nonacti',
+        b = tf.compat.v1.get_variable(name='biases_nonacti',
                             shape=[out_channels],
                             initializer=tf.constant_initializer(0.0))
         x = tf.nn.conv2d(x, w, stride, padding='SAME', name='conv_nonacti')
@@ -231,11 +232,11 @@ def acti_layer(x):
 
 
 def deconv(layer_name, x, in_channels, out_channels, output_shape=[32, 224, 224, 64], kernel_size=[3, 3], stride=[1, 1, 1, 1]):
-    with tf.variable_scope(layer_name, reuse=tf.AUTO_REUSE):
-        w = tf.get_variable(name='weights',
+    with tf.compat.v1.variable_scope(layer_name, reuse=tf.AUTO_REUSE):
+        w = tf.compat.v1.get_variable(name='weights',
                             shape=[kernel_size[0], kernel_size[1], in_channels, out_channels],
                             initializer=tf.contrib.layers.xavier_initializer())  # default is uniform distribution initialization
-        # b = tf.get_variable(name='biases',
+        # b = tf.compat.v1.get_variable(name='biases',
         #                     shape=[out_channels],
         #                     initializer=tf.constant_initializer(0.0))
         x = tf.nn.conv2d_transpose(x, w, output_shape=output_shape, strides=stride, padding='SAME',
