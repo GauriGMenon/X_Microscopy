@@ -244,7 +244,7 @@ class pix2pix(object):
             #     if epoch == 10:# Changed Here
             #         break
             # data = glob('./datasets/{}/train_wild/*.tif'.format(self.dataset_name)) #Change Here: '{}/example-data-training samples/*'
-            data = glob('X-Microscopy\tubulin-models\tubulin-models\tubulin-models\example-data-tubulin-model-WF+MU-SRM-to-SRM\training-example-data'.format(self.dataset_name))
+            data = glob('../../X-Microscopy/tubulin-models/tubulin-models/tubulin-models/example-data-tubulin-model-WF+MU-SRM-to-SRM/training-example-data'.format(self.dataset_name))
             # data = glob('/home/ksc/anet-models/different_bits/{}/*'.format(args.dataset_name))
             # print(data)
             np.random.shuffle(data)
@@ -435,7 +435,7 @@ class pix2pix(object):
         #     sample_gt = load_val_image(sample_file)
         #     img_name = txt_wrap_by('/', '.', sample_file)
         data = np.random.choice( #Changed Here: "{}/example-data-training samples/*"
-            glob('X-Microscopy\tubulin-models\tubulin-models\tubulin-models\example-data-tubulin-model-WF+MU-SRM-to-SRM\training-example-data'.format(self.dataset_name)),
+            glob('../../X-Microscopy/tubulin-models/tubulin-models/tubulin-models/example-data-tubulin-model-WF+MU-SRM-to-SRM/training-example-data'.format(self.dataset_name)),
             self.batch_size)
         # data = np.random.choice(
         #     glob('/home/ksc/anet-models/different_bits/{}/*'.format(self.dataset_name)),
@@ -517,7 +517,7 @@ class pix2pix(object):
             sess.close()
 
     def test_end(self, args):
-        sample_files = sorted(glob('X-Microscopy\tubulin-models\tubulin-models\tubulin-models\example-data-tubulin-model-WF+MU-SRM-to-SRM/{}/*'.format(self.dataset_name)))
+        sample_files = sorted(glob('../../X-Microscopy/tubulin-models/tubulin-models/tubulin-models/example-data-tubulin-model-WF+MU-SRM-to-SRM/{}/*'.format(self.dataset_name)))
         # sample_files = glob('/media/ksc/data/below-100-100/*') #Changed Here
         # sample_files = glob('/home/ksc/anet-models/different_bits')
         # sample_files = glob(

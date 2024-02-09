@@ -17,7 +17,7 @@ parser.add_argument('--output_nc', dest='output_nc', type=int, default=3, help='
 parser.add_argument('--lr', dest='lr', type=float, default=0.0002, help='initial learning rate for adam')
 parser.add_argument('--beta1', dest='beta1', type=float, default=0.5, help='momentum term of adam')
 parser.add_argument('--phase', dest='phase', default='test', help='train, test') #Changed Here
-parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='../tubulin-models/tubulin-models/tubulin-models/example-data-tubulin-model-WF+MU-SRM-to-SRM/model/X-Net', help='models are saved here')
+parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='../../X-Microscopy/tubulin-models/tubulin-models/tubulin-models/example-data-tubulin-model-WF+MU-SRM-to-SRM/model/X-Net', help='models are saved here')
 parser.add_argument('--best_checkpoint_dir', dest='best_checkpoint_dir', default='./experiment_xl_sparse/check_best_new/', help='best models are saved here')
 parser.add_argument('--fine_checkpoint_dir', dest='checkpoint_dir', default='./experiment_xl_sparse/fine_checkpoint/', help='models are saved here')
 parser.add_argument('--sample_dir', dest='sample_dir', default='./experiment_xl_sparse/base_val_finetune/', help='sample are saved here')
@@ -83,7 +83,7 @@ def main(_):
         base_count = 94312
         for epoch in range(args.epoch):
             # data = glob('./datasets/{}/train_wild/*.tif'.format(args.dataset_name)) #Changed Here: "{}/example-data-training samples/*"
-            data = glob('X-Microscopy\tubulin-models\tubulin-models\tubulin-models\example-data-tubulin-model-WF+MU-SRM-to-SRM\training-example-data'.format(args.dataset_name))
+            data = glob('../../X-Microscopy/tubulin-models/tubulin-models/tubulin-models/example-data-tubulin-model-WF+MU-SRM-to-SRM/training-example-data'.format(args.dataset_name))
             # data = glob('/home/ksc/anet-models/different_bits/{}/*'.format(args.dataset_name))
             # data = glob('/media/ksc/code/tubulin-model-data/tubulin-model-3/finetune-samples/*')
             # np.random.shuffle(data)
