@@ -9,6 +9,7 @@ import os
 import opts as tools
 from logger import setup_logger
 import cv2
+import imageio
 
 class pix2pix(object):
     def __init__(self, sess,pix_model,h = 968, w = 774,batch_size = 1,
@@ -457,13 +458,13 @@ class pix2pix(object):
 
         graph = tf.Graph()
         with graph.as_default():
-            fusion_image_placeholder = tf.placeholder(tf.float32,
+            fusion_image_placeholder = tf.compat.v1.placeholder(tf.float32,
                                                      shape=[1, sample_images.shape[0], sample_images.shape[1],
                                                         3])
-            fusion_image_placeholder_1 = tf.placeholder(tf.float32,
+            fusion_image_placeholder_1 = tf.compat.v1.placeholder(tf.float32,
                                                       shape=[1, sample_images_1.shape[0], sample_images_1.shape[1],
                                                              3])
-            # target_image_placeholder = tf.placeholder(tf.float32,shape=[1,sample_gt_1.shape[0],sample_gt_1.shape[1],
+            # target_image_placeholder = tf.compat.v1.placeholder(tf.float32,shape=[1,sample_gt_1.shape[0],sample_gt_1.shape[1],
             #                                                  3])
 
             if self.withbn:
@@ -512,7 +513,7 @@ class pix2pix(object):
                 # )
                 # print("ssim_a = "+ssim_a)
                 path = '{}/train_{:04d}_{:01d}_{}.tif'.format(sample_dir, epoch, idx,img_name)
-                img = scipy.misc.imread(path).astype(np.float32)
+                img = imageio.imread(path).astype(np.float32)
                 eval(img,self.logger_val,"train_{:04d}_{:01d}__{}".format(epoch,idx,img_name),epoch)
             sess.close()
 
@@ -523,15 +524,15 @@ class pix2pix(object):
         # sample_files = glob(
         #     '/media/ksc/code/tubulin-model-data/{}/model-2-training-samples/*'.format(self.dataset_name))
         count = 0
-        print(sample_files)
+        print("Sample files", sample_files)
         for sample_file in sample_files:
             print(sample_file)
             dir = sample_file + '/'
             filelist = get_filelist(dir, [])
+            print("Filelist", filelist)
             for fl in filelist:
-                if 'wf.tif' in fl:
-                # if 'wf/1-1.tif' in fl:
-                    print(fl)
+                # if 'wf.tif' in fl:
+                if 'wf\\1-1.tif' in fl:
                     sample_file_img = fl
                     # sample_sparse_img = fl[:-6] + '1-5.tif'
                     # sample_gt_img = fl[:-6] + 'perfect.tif'
@@ -542,7 +543,7 @@ class pix2pix(object):
                             print("sampling image ", count)
                             if count <0:
                                 continue
-                            image1 = scipy.misc.imread(sample_file_img).astype('uint8')
+                            image1 = imageio.imread(sample_file_img).astype('uint8')
 
                             if image1.ndim==2:
                                 img_AA = np.zeros((image1.shape[0], image1.shape[1], 3))
@@ -553,14 +554,14 @@ class pix2pix(object):
 
                             # sampled sparse
                             # sample_sparse_img = fl[:-6] + '1-{}.tif'.format(sparse_count)
-                            # image2 = scipy.misc.imread(sample_sparse_img).astype('uint8')
+                            # image2 = imageio.imread(sample_sparse_img).astype('uint8')
                             # image2[:, :, 1] = image2[:, :, 0]
                             # image2[:, :, 2] = image2[:, :, 0]
 
 
                             #generated sparse
-                            sample_sparse_img = fl.replace(fl.split('/')[-1], '') + '/MU-SRM/MU-SRM.tif'
-                            image2 = scipy.misc.imread(sample_sparse_img).astype('uint8')
+                            sample_sparse_img = fl.replace(fl.split('/')[-1], '') + '/MU-SRM/1sparse-generated.tif'
+                            image2 = imageio.imread(sample_sparse_img).astype('uint8')
 
                             # sparse + sparse
                             # image1 = image2
@@ -575,10 +576,10 @@ class pix2pix(object):
                             image1 = np.array(image1).astype(np.float32)
                             image2 = np.array(image2).astype(np.float32)
 
-                            fusion_image_placeholder = tf.placeholder(tf.float32,
+                            fusion_image_placeholder = tf.compat.v1.placeholder(tf.float32,
                                                           shape=[1, image1.shape[0], image1.shape[1],
                                                                  3])
-                            fusion_image_placeholder_1 = tf.placeholder(tf.float32,
+                            fusion_image_placeholder_1 = tf.compat.v1.placeholder(tf.float32,
                                                             shape=[1, image2.shape[0], image2.shape[1],
                                                                    3])
                             if self.withbn:
@@ -587,10 +588,10 @@ class pix2pix(object):
                                     h=image2.shape[0], w=image2.shape[1], reuse=False)
 
                             saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables())
-                            with tf.Session(graph=graph, config=tf.ConfigProto(
+                            with tf.compat.v1.Session(graph=graph, config=tf.compat.v1.ConfigProto(
                                 allow_soft_placement=True,
                                 log_device_placement=False,
-                                gpu_options=tf.GPUOptions(allow_growth=True,
+                                gpu_options=tf.compat.v1.GPUOptions(allow_growth=True,
                                                   per_process_gpu_memory_fraction=1,
                                                   visible_device_list="0"))) as sess:
                                 ckpt = tf.train.get_checkpoint_state(args.checkpoint_dir)
@@ -626,5 +627,6 @@ class pix2pix(object):
                                     '{}.tif'.format(img_name_ak2))
                                 save_images_val(image_f,
                                     '{}.tif'.format(img_name_ak3))
+                                print(img_name_ak1)
                                 sess.close()
 

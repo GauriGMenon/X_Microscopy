@@ -8,7 +8,7 @@ from utils import *
 import tensorflow as tf
 from logger import setup_logger
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--dataset_name', dest='dataset_name', default='test-example-data', help='name of the dataset')
+parser.add_argument('--dataset_name', dest='dataset_name', default='training-example-data', help='name of the dataset')
 parser.add_argument('--epoch', dest='epoch', type=int, default=1000,help='# of epoch')
 parser.add_argument('--fine_size', dest='fine_size', type=int, default=256, help='then crop to this size')
 parser.add_argument('--train_size', dest='train_size', type=int, default=1e8, help='# images used to train')

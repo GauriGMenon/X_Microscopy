@@ -471,8 +471,8 @@ def save_images_val(images, image_path,reg=True,mode='RGB'):
     images[:, :, 1] = 0
     images[:, :, 2] = 0
 
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
+    sess = tf.compat.v1.Session()
+    sess.run(tf.compat.v1.global_variables_initializer())
     images = tf.saturate_cast(images, tf.uint8)
     images = images.eval(session = sess)
     result_image = im.fromarray(images,mode=mode)
